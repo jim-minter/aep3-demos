@@ -1,0 +1,64 @@
+kind: List
+apiVersion: v1
+metadata:
+  name: monster
+
+items:
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: monster
+  spec:
+    replicas: 1
+    selector:
+      deploymentConfig: monster
+    template:
+      metadata:
+        labels:
+          deploymentConfig: monster
+        name: monster
+      spec:
+        containers:
+        - name: monster
+          image: monster
+          ports:
+          - name: http
+            containerPort: 8080
+          readinessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - /opt/eap/bin/readinessProbe.sh
+          env:
+          - name: DB_SERVICE_PREFIX_MAPPING
+            value: monster-mysql=DB
+          - name: TX_DATABASE_PREFIX_MAPPING
+            value: monster-mysql=DB
+          - name: DB_JNDI
+            value: java:jboss/datasources/MySQLDS
+          - name: DB_DATABASE
+            value: monster
+          - name: DB_USERNAME
+            value: monster
+          - name: DB_PASSWORD
+            value: monster
+
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: monster
+  spec:
+    ports:
+    - name: http
+      port: 8080
+    selector:
+      deploymentConfig: monster
+
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: monster
+  spec:
+    to:
+      name: monster

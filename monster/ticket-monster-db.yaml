@@ -1,0 +1,42 @@
+kind: List
+apiVersion: v1
+metadata:
+  name: monster
+
+items:
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: monster-mysql
+  spec:
+    replicas: 1
+    selector:
+      deploymentConfig: monster-mysql
+    template:
+      metadata:
+        labels:
+          deploymentConfig: monster-mysql
+        name: monster-mysql
+      spec:
+        containers:
+        - name: monster-mysql
+          image: mysql
+          ports:
+          - containerPort: 3306
+          env:
+          - name: MYSQL_USER
+            value: monster
+          - name: MYSQL_PASSWORD
+            value: monster
+          - name: MYSQL_DATABASE
+            value: monster
+
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: monster-mysql
+  spec:
+    ports:
+    - port: 3306
+    selector:
+      deploymentConfig: monster-mysql

@@ -1,0 +1,9 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: hello-atomic-pod
+spec:
+  containers:
+  - name: hello-atomic-container
+    image: atomicenterprise/hello-atomic:latest
+    imagePullPolicy: IfNotPresent

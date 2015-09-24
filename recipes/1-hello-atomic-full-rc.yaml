@@ -1,0 +1,39 @@
+kind: List
+apiVersion: v1
+items:
+- kind: ReplicationController
+  apiVersion: v1
+  metadata:
+    name: hello-atomic-rc
+  spec:
+    replicas: 1
+    selector:
+      name: hello-atomic-pod
+    template:
+      metadata:
+        labels:
+          name: hello-atomic-pod
+      spec:
+        containers:
+        - name: hello-atomic-container
+          image: atomicenterprise/hello-atomic:latest
+          imagePullPolicy: IfNotPresent
+
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: hello-atomic-service
+  spec:
+    ports:
+    - port: 8080
+    selector:
+      name: hello-atomic-pod
+
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: hello-atomic
+  spec:
+    to:
+      kind: Service
+      name: hello-atomic-service
